@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Comparison</title>
+</head>
+<body>
+    <h1>Upload Images for Comparison</h1>
+    <form id="uploadForm">
+        <input type="file" id="image1" name="image1" accept="image/*" required>
+        <input type="file" id="image2" name="image2" accept="image/*" required>
+        <button type="submit">Upload</button>
+    </form>
+    <h2>Result:</h2>
+    <img id="resultImage" src="" alt="Result will appear here" style="display:none;"/>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('image1', document.getElementById('image1').files[0]);
+            formData.append('image2', document.getElementById('image2').files[0]);
+
+            fetch('http://127.0.0.1:5000/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.resultImage) {
+                    const resultImage = document.getElementById('resultImage');
+                    resultImage.src = data.resultImage;
+                    resultImage.style.display = 'block';
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
